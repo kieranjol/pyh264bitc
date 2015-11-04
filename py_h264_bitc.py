@@ -30,10 +30,11 @@ for filename in video_files: #loop all files in directory
 									'-of', 'default=noprint_wrappers=1:nokey=1',
 									filename]))	
 	
-	
+	# Calculate x and y coordinates of the timecode
 	vertical_position_timecode = video_height / 1.2
-	print vertical_position_timecode
-	horizontal_position_timecode = video_width /2))
-	#font_size = ($(bc <<< $size/12))
-	
-		#wsize=($(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=noprint_wrappers=1:nokey=1 "$1"))
+	horizontal_position_timecode = video_width / 2
+	# Calculate appropriate font size
+	font_size = video_height / 12
+	textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % (font_size,horizontal_position_timecode,vertical_position_timecode))
+	print  textoptions
+		

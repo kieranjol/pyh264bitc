@@ -37,4 +37,10 @@ for filename in video_files: #loop all files in directory
 	font_size = video_height / 12
 	textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % (font_size,horizontal_position_timecode,vertical_position_timecode))
 	print  textoptions
-		
+	tctest = subprocess.check_output(['ffprobe', 
+									'-v', 'error',
+									'-select_streams', 'v:0',
+									'-show_entries', 'stream_tags=timecode',
+									'-of', 'default=noprint_wrappers=1:nokey=1',
+									filename])
+	print tctest

@@ -45,12 +45,7 @@ for filename in video_files: #loop all files in directory
 									'-show_entries', 'format_tags=timecode:stream_tags=timecode',
 									'-of', 'default=noprint_wrappers=1:nokey=1',
 									filename])
-	timecode_location_test = subprocess.check_output(['ffprobe',
-									'-v', 'error',
-									'-select_streams', 'v:0',
-									'-show_entries', 'stream_tags=timecode',
-									'-of', 'default=noprint_wrappers=1:nokey=1',
-									filename])
+	
 	get_framerate = subprocess.check_output(['ffprobe',
 									'-v', 'error',
 									'-select_streams', 'v:0',
@@ -66,14 +61,8 @@ for filename in video_files: #loop all files in directory
 		#pdb.set_trace()
 	gd = get_framerate.rstrip()
 
-
-
-	gd = get_framerate.rstrip()
-
 	print gd	
 	drawtext_options = "drawtext=fontfile=/Library/Fonts/AppleGothic.ttf:fontcolor=white:timecode=%s:rate=%s:boxcolor=0x000000AA:box=1:%s" % (timecode_test, gd, textoptions)
-
-
 
 	print timecode_test
 	print get_framerate

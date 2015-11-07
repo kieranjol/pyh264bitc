@@ -70,6 +70,6 @@ for filename in video_files: #loop all files in directory
 	subprocess.call(['ffmpeg',
  			'-i', filename,
 			'-c:v', 'libx264',
-			'-crf', '19',
+			'-crf', '22',
 			'-pix_fmt', 'yuv420p',
 			'-vf',drawtext_options, output])

@@ -3,7 +3,15 @@ import sys
 import os
 from glob import glob
 import pdb
-
+from sys import platform as _platform
+if _platform == "linux" or _platform == "linux2":
+    print "linux"
+elif _platform == "darwin":
+    print "OS X"
+	font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
+elif _platform == "win32":
+    print "Windows"
+    font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
 
 # Directory with files that we want to transcode losslessly and generate metadata for
 video_dir = sys.argv[1]
@@ -54,16 +62,16 @@ for filename in video_files: #loop all files in directory
 									filename])
 									
 	if not timecode_test_raw:
-		timecode_test = "01\\\:00\\\:00\\\:00"
+		timecode_test = '02\:00\:00\:00'
 	else:
-		timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
+		timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '')
 	
 		#pdb.set_trace()
 	gd = get_framerate.rstrip()
 
 	print gd	
-	drawtext_options = "drawtext=fontfile=/Library/Fonts/AppleGothic.ttf:fontcolor=white:timecode=%s:rate=%s:boxcolor=0x000000AA:box=1:%s" % (timecode_test, gd, textoptions)
-
+	drawtext_options = "drawtext=%s:fontcolor=white:timecode=%s:rate=%s:boxcolor=0x000000AA:box=1:%s" % (font_path,timecode_test, gd, textoptions)
+	print drawtext_options
 	print timecode_test
 	print get_framerate
 

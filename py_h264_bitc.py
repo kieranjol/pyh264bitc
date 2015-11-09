@@ -8,7 +8,7 @@ if _platform == "linux" or _platform == "linux2":
     print "linux"
 elif _platform == "darwin":
     print "OS X"
-	font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
+    font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
 elif _platform == "win32":
     print "Windows"
     font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
@@ -62,9 +62,26 @@ for filename in video_files: #loop all files in directory
 									filename])
 									
 	if not timecode_test_raw:
-		timecode_test = '02\:00\:00\:00'
+		
+		if _platform == "darwin":
+		    print "OS X"
+		    timecode_test = '02\\\:00\\\:00\\\:00'
+		elif _platform == "win32":
+		    print "Windows"
+		    font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+		    timecode_test = '02\:00\:00\:00'
+			
 	else:
-		timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '')
+		if _platform == "darwin":
+		    print "OS X"
+		    timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
+		elif _platform == "win32":
+		    print "Windows"
+		    font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+		    timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '')
+		
+		
+		
 	
 		#pdb.set_trace()
 	gd = get_framerate.rstrip()

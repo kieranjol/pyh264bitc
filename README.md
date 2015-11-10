@@ -1,3 +1,4 @@
 # pyh264bitc
 Create watermarked/timecoded h264s <br>
-Currently working in OSX - Ubuntu and Windows need different font paths.
+Currently working in OSX and windows. Ubuntu to be tested. <br>
+

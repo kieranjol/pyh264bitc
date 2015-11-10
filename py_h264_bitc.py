@@ -44,7 +44,8 @@ for filename in video_files: #loop all files in directory
 	# Calculate x and y coordinates of the timecode
 	vertical_position_timecode = video_height / 1.2
 	horizontal_position_timecode = video_width / 2
-	
+	#horizontal_watermark_position_timecode = video_width / 2
+	#vertical_watermark_position_timecode = video_height / 2
 	# Calculate appropriate font size
 	font_size = video_height / 12
 	#pdb.set_trace()

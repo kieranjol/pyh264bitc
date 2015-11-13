@@ -6,14 +6,8 @@ import pdb
 from sys import platform as _platform
 
 # Determine which operating system. Only important for locating bitc fonts.
-if _platform == "linux" or _platform == "linux2":
-    print "linux"
-elif _platform == "darwin":
-    print "OS X"
-    font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
-elif _platform == "win32":
-    print "Windows"
-    font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+
+    
 
 # Directory with files that we want to transcode losslessly and generate metadata for
 video_dir = sys.argv[1]
@@ -54,9 +48,12 @@ for filename in video_files: #loop all files in directory
     if _platform == "darwin":
         textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
         (font_size,horizontal_position_timecode,vertical_position_timecode))
+        print "OS X"
+        font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
     elif _platform == "win32":
         textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
         (font_size,horizontal_position_timecode,vertical_position_timecode))
+        font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
     
     watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
     (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
@@ -95,13 +92,15 @@ for filename in video_files: #loop all files in directory
     else:
 		# If timecode is present, this will escape the colons
 		# so that it is compatible with each operating system.
-		if _platform == "darwin":
-		    print "OS X"
-		    timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
-		elif _platform == "win32":
-		    print "Windows"
+        if _platform == "darwin":
+            print "OS X"
+            timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
+        elif _platform == "win32":
+            print "Windows"
 		    
-		    timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
+            timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
+            print "Windows"
+            
 		
 		
 		

@@ -13,7 +13,7 @@ elif _platform == "darwin":
     font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
 elif _platform == "win32":
     print "Windows"
-    font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+    font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
 
 # Directory with files that we want to transcode losslessly and generate metadata for
 video_dir = sys.argv[1]
@@ -51,7 +51,7 @@ for filename in video_files: #loop all files in directory
     watermark_size = video_height / 14
     #pdb.set_trace()
 	
-    textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
+    textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
     (font_size,horizontal_position_timecode,vertical_position_timecode))
     watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
     (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
@@ -84,7 +84,7 @@ for filename in video_files: #loop all files in directory
             timecode_test = '01\\\:00\\\:00\\\:00'
         elif _platform == "win32":
             print "Windows"
-            font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+            
             timecode_test = '01\:00\:00\:00'
 			
     else:
@@ -95,8 +95,8 @@ for filename in video_files: #loop all files in directory
 		    timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
 		elif _platform == "win32":
 		    print "Windows"
-		    font_path = "fontfile='C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
-		    timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '')
+		    
+		    timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
 		
 		
 		
@@ -109,7 +109,7 @@ for filename in video_files: #loop all files in directory
     print fixed_framerate	
     drawtext_options = ("drawtext=%s:fontcolor=white:timecode=%s:\
     rate=%s:boxcolor=0x000000AA:box=1:%s,\
-    drawtext=%s:fontcolor=white:text='IFI IRISH FILM ARCHIVE':%s" % 
+    drawtext=%s:fontcolor=white:text='IFI:%s" % 
     (font_path, timecode_test, fixed_framerate, textoptions, font_path, watermark_options))
     print drawtext_options
     print timecode_test

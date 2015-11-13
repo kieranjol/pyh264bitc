@@ -51,8 +51,13 @@ for filename in video_files: #loop all files in directory
     watermark_size = video_height / 14
     #pdb.set_trace()
 	
-    textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
-    (font_size,horizontal_position_timecode,vertical_position_timecode))
+    if _platform == "darwin":
+        textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
+        (font_size,horizontal_position_timecode,vertical_position_timecode))
+    elif _platform == "win32":
+        textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
+        (font_size,horizontal_position_timecode,vertical_position_timecode))
+    
     watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
     (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
     print  textoptions
@@ -109,7 +114,7 @@ for filename in video_files: #loop all files in directory
     print fixed_framerate	
     drawtext_options = ("drawtext=%s:fontcolor=white:timecode=%s:\
     rate=%s:boxcolor=0x000000AA:box=1:%s,\
-    drawtext=%s:fontcolor=white:text='IFI:%s" % 
+    drawtext=%s:fontcolor=white:text='IFI Irish':%s" % 
     (font_path, timecode_test, fixed_framerate, textoptions, font_path, watermark_options))
     print drawtext_options
     print timecode_test

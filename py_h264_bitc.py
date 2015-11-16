@@ -5,10 +5,6 @@ from glob import glob
 import pdb
 from sys import platform as _platform
 
-# Determine which operating system. Only important for locating bitc fonts.
-
-    
-
 # Directory with files that we want to transcode losslessly and generate metadata for
 video_dir = sys.argv[1]
 

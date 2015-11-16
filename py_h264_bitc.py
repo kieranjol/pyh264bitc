@@ -21,20 +21,20 @@ video_files =  glob('*.mov') + glob('*.mp4') + glob('*.mxf')
 
 for filename in video_files: #loop all files in directory
     output = filename + "_vimeo.mov"
-    video_height = float(subprocess.check_output(['ffprobe',
-                                                  '-v', 'error',
-                                                  '-select_streams', 'v:0',
-                                                  '-show_entries', 'stream=height',
-                                                  '-of', 'default=noprint_wrappers=1:nokey=1',
-                                                  filename]))
+    def getffprobe(variable, streamvalue, which_file):
+        variable = subprocess.check_output(['ffprobe',
+                                                    '-v', 'error',
+                                                    '-select_streams', 'v:0',
+                                                    '-show_entries', 
+                                                    streamvalue,
+                                                    '-of', 'default=noprint_wrappers=1:nokey=1',
+                                                    which_file])
+        return variable
+    video_height = float(getffprobe('video_height','stream=height', filename))
+    video_width = float(getffprobe('video_width','stream=width', filename))
 	
-    video_width = float(subprocess.check_output(['ffprobe',
-                                                 '-v', 'error',
-                                                 '-select_streams', 'v:0',
-                                                 '-show_entries', 'stream=width',
-                                                 '-of', 'default=noprint_wrappers=1:nokey=1',
-                                                 filename]))
-
+    print video_height
+    print video_width
 	# Calculate x and y coordinates of the timecode and watermark
     vertical_position_timecode = video_height / 1.2
     horizontal_position_timecode = video_width / 2
@@ -60,21 +60,14 @@ for filename in video_files: #loop all files in directory
     print  textoptions
 	
     # Get starting timecode. In a raw state that requires further processing further on in the script.
-    timecode_test_raw = subprocess.check_output(['ffprobe',
-                                                '-v', 'error',
-                                                '-select_streams', 'v:0',
-                                                '-show_entries', 
-                                                'format_tags=timecode:stream_tags=timecode',
-                                                '-of', 'default=noprint_wrappers=1:nokey=1',
-                                                filename])
+  
+    
+
+    timecode_test_raw = getffprobe('timecode_test_raw','format_tags=timecode:stream_tags=timecode', filename)
+    get_framerate = getffprobe('get_frame_rate','stream=avg_frame_rate', filename)
 	
     # Get framerate so that bitc is accurate.
-    get_framerate = subprocess.check_output(['ffprobe',
-                                            '-v', 'error',
-                                            '-select_streams', 'v:0',
-                                            '-show_entries', 'stream=avg_frame_rate',
-                                            '-of', 'default=noprint_wrappers=1:nokey=1',
-                                            filename])
+
 									
 	# This tests if there is actually a timecode present in the file.								
     if not timecode_test_raw:

@@ -60,15 +60,9 @@ for filename in video_files: #loop all files in directory
     print  textoptions
 	
     # Get starting timecode. In a raw state that requires further processing further on in the script.
-  
-    
-
     timecode_test_raw = getffprobe('timecode_test_raw','format_tags=timecode:stream_tags=timecode', filename)
     get_framerate = getffprobe('get_frame_rate','stream=avg_frame_rate', filename)
 	
-    # Get framerate so that bitc is accurate.
-
-									
 	# This tests if there is actually a timecode present in the file.								
     if not timecode_test_raw:
 		# The timecode needs to be phrased in a way unique to each operating system.
@@ -93,11 +87,7 @@ for filename in video_files: #loop all files in directory
 		    
             timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
             print "Windows"
-            
-		
-		
-		
-	
+
 		#pdb.set_trace()
 	# This removes the new line character from the framemrate.
     fixed_framerate = get_framerate.rstrip()

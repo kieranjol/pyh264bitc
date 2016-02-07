@@ -6,127 +6,145 @@ import os
 from glob import glob
 import pdb
 from sys import platform as _platform
-print _platform
+if len(sys.argv) < 2:
+    print 'IFI H264.MOV BITC/WATERMARK ACCESS COPY SCRIPT'
+    print 'USAGE: PYTHON bitc.py FILENAME'
+    print 'OR'
+    print 'USAGE: PYTHON bitc.py DirectoryNAME'
+    print 'If input is a directory, all files will be processed' 
+    print 'If input is a file, only that file will be processed'    
+    sys.exit()
+else:
 
-# Input, either file or firectory, that we want to transcode losslessly and generate metadata for
-input = sys.argv[1]
-print input
 
-# Change directory to directory with video files
-wd = os.path.dirname(input)
-os.chdir(wd)
-file_without_path = os.path.basename(input)
-print file_without_path
+    print _platform
 
-# Find all video files to transcode
-if os.path.isfile(file_without_path):
-    print os.path.isfile(file_without_path)
-    print "single file found"
-    video_files = []
-    video_files.append(file_without_path)
-    print video_files
-    
-elif os.path.isdir(file_without_path):  
-    os.chdir(file_without_path)
-    video_files =  glob('*.mov') + glob('*.mp4') + glob('*.mxf') + glob('*.mkv')
+    # Input, either file or firectory, that we want to transcode losslessly and generate metadata for
+    input = sys.argv[1]
+    print input
 
-else: 
-    print "Your input isn't a file or a directory."
-    print "What was it? I'm curious."  
+    # Store the directory containing the input file/directory.
+    wd = os.path.dirname(input)
 
-for filename in video_files: #loop all files in directory
-    print filename
-    output = filename + "_vimeo.mov"
-    def getffprobe(variable, streamvalue, which_file):
-        variable = subprocess.check_output(['ffprobe',
-                                                    '-v', 'error',
-                                                    '-select_streams', 'v:0',
-                                                    '-show_entries', 
-                                                    streamvalue,
-                                                    '-of', 'default=noprint_wrappers=1:nokey=1',
-                                                    which_file])
-        return variable
-    video_height = float(getffprobe('video_height','stream=height', filename))
-    video_width = float(getffprobe('video_width','stream=width', filename))
+    # Change current working directory to the value stored as "wd"
+    os.chdir(wd)
 
-    print video_height
-    print video_width
-    # Calculate x and y coordinates of the timecode and watermark
-    vertical_position_timecode = video_height / 1.2
-    horizontal_position_timecode = video_width / 2
-    horizontal_watermark_position_timecode = video_width / 2
-    vertical_watermark_position_timecode = video_height / 2.1
-    # Calculate appropriate font size
-    font_size = video_height / 12
-    watermark_size = video_height / 14
-    #pdb.set_trace()
+    # Store the actual file/directory name without the full path.
+    file_without_path = os.path.basename(input)
+    print file_without_path
 
-    if _platform == "darwin":
-        textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
-        (font_size,horizontal_position_timecode,vertical_position_timecode))
-        print "OS X"
-        font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
-    elif _platform == "linux2":
-        textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
-        (font_size,horizontal_position_timecode,vertical_position_timecode))
-        print "OS X"
-        font_path= "fontfile=/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf"
+    # Check if input is a file.
+    # AFAIK, os.path.isfile only works if full path isn't present.
+    if os.path.isfile(file_without_path):      
+        print os.path.isfile(file_without_path)
+        print "single file found"
+        video_files = []                       # Create empty list 
+        video_files.append(file_without_path)  # Add filename to list
+        print video_files
 
-    elif _platform == "win32":
-        textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
-        (font_size,horizontal_position_timecode,vertical_position_timecode))
-        font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+    # Check if input is a directory. 
+    elif os.path.isdir(file_without_path):  
+        os.chdir(file_without_path)
+        video_files =  glob('*.mov') + glob('*.mp4') + glob('*.mxf') + glob('*.mkv')
 
-    watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
-    (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
-    print  textoptions
+    # Prints some stuff if input isn't a file or directory.
+    else: 
+        print "Your input isn't a file or a directory."
+        print "What was it? I'm curious."  
 
-    # Get starting timecode. In a raw state that requires further processing further on in the script.
-    timecode_test_raw = getffprobe('timecode_test_raw','format_tags=timecode:stream_tags=timecode', filename)
-    get_framerate = getffprobe('get_frame_rate','stream=avg_frame_rate', filename)
+    for filename in video_files: #loop all files in directory
+        print filename
+        output = filename + "_vimeo.mov"
+        def getffprobe(variable, streamvalue, which_file):
+            variable = subprocess.check_output(['ffprobe',
+                                                        '-v', 'error',
+                                                        '-select_streams', 'v:0',
+                                                        '-show_entries', 
+                                                        streamvalue,
+                                                        '-of', 'default=noprint_wrappers=1:nokey=1',
+                                                        which_file])
+            return variable
+        video_height = float(getffprobe('video_height','stream=height', filename))
+        video_width = float(getffprobe('video_width','stream=width', filename))
 
-    # This tests if there is actually a timecode present in the file.								
-    if not timecode_test_raw:
-        # The timecode needs to be phrased in a way unique to each operating system.
-        # Note the backslashes.
-        # This section makes up a timecode if none is present in the file.
-        if _platform == "darwin" or _platform == "linux2":
-            print "OS X"
-            timecode_test = '01\\\:00\\\:00\\\:00'
-        elif _platform == "win32":
-            print "Windows"
-            
-            timecode_test = '01\:00\:00\:00'
-            
-    else:
-        # If timecode is present, this will escape the colons
-        # so that it is compatible with each operating system.
-        if _platform == "darwin" or _platform == "linux2":
-            print "OS X"
-            timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
-        elif _platform == "win32":
-            print "Windows"
-            
-            timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
-            print "Windows"
-
+        print video_height
+        print video_width
+        # Calculate x and y coordinates of the timecode and watermark
+        vertical_position_timecode = video_height / 1.2
+        horizontal_position_timecode = video_width / 2
+        horizontal_watermark_position_timecode = video_width / 2
+        vertical_watermark_position_timecode = video_height / 2.1
+        # Calculate appropriate font size
+        font_size = video_height / 12
+        watermark_size = video_height / 14
         #pdb.set_trace()
-    # This removes the new line character from the framemrate.
-    fixed_framerate = get_framerate.rstrip()
 
-    #all these prints are just for testing. Will be removed later.
-    print fixed_framerate	
-    drawtext_options = ("drawtext=%s:fontcolor=white:timecode=%s:\
-    rate=%s:boxcolor=0x000000AA:box=1:%s,\
-    drawtext=%s:fontcolor=white:text='INSERT WATERMARK TEXT HERE':%s" % 
-    (font_path, timecode_test, fixed_framerate, textoptions, font_path, watermark_options))
-    print drawtext_options
-    print timecode_test
-    print get_framerate
+        if _platform == "darwin":
+            textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
+            (font_size,horizontal_position_timecode,vertical_position_timecode))
+            print "OS X"
+            font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
+        elif _platform == "linux2":
+            textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
+            (font_size,horizontal_position_timecode,vertical_position_timecode))
+            print "OS X"
+            font_path= "fontfile=/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf"
 
-    subprocess.call(['ffmpeg',
-                    '-i', filename,
-                    '-c:v', 'libx264',
-                    '-crf', '22',
-                    '-pix_fmt', 'yuv420p',
-                    '-vf',drawtext_options, output])
+        elif _platform == "win32":
+            textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
+            (font_size,horizontal_position_timecode,vertical_position_timecode))
+            font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
+
+        watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
+        (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
+        print  textoptions
+
+        # Get starting timecode. In a raw state that requires further processing further on in the script.
+        timecode_test_raw = getffprobe('timecode_test_raw','format_tags=timecode:stream_tags=timecode', filename)
+        get_framerate = getffprobe('get_frame_rate','stream=avg_frame_rate', filename)
+
+        # This tests if there is actually a timecode present in the file.								
+        if not timecode_test_raw:
+            # The timecode needs to be phrased in a way unique to each operating system.
+            # Note the backslashes.
+            # This section makes up a timecode if none is present in the file.
+            if _platform == "darwin" or _platform == "linux2":
+                print "OS X"
+                timecode_test = '01\\\:00\\\:00\\\:00'
+            elif _platform == "win32":
+                print "Windows"
+                
+                timecode_test = '01\:00\:00\:00'
+                
+        else:
+            # If timecode is present, this will escape the colons
+            # so that it is compatible with each operating system.
+            if _platform == "darwin" or _platform == "linux2":
+                print "OS X"
+                timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
+            elif _platform == "win32":
+                print "Windows"
+                
+                timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
+                print "Windows"
+
+            #pdb.set_trace()
+        # This removes the new line character from the framemrate.
+        fixed_framerate = get_framerate.rstrip()
+
+        #all these prints are just for testing. Will be removed later.
+        print fixed_framerate	
+        drawtext_options = ("drawtext=%s:fontcolor=white:timecode=%s:\
+        rate=%s:boxcolor=0x000000AA:box=1:%s,\
+        drawtext=%s:fontcolor=white:text='INSERT WATERMARK TEXT HERE':%s" % 
+        (font_path, timecode_test, fixed_framerate, textoptions, font_path, watermark_options))
+        print drawtext_options
+        print timecode_test
+        print get_framerate
+
+        subprocess.call(['ffmpeg',
+                        '-i', filename,
+                        '-c:v', 'libx264',
+                        '-crf', '22',
+                        '-pix_fmt', 'yuv420p',
+                        '-vf',drawtext_options, output])

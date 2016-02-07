@@ -16,7 +16,6 @@ if len(sys.argv) < 2:
     sys.exit()
 else:
 
-
     print _platform
 
     # Input, either file or firectory, that we want to transcode losslessly and generate metadata for
@@ -65,7 +64,7 @@ else:
                                                         which_file])
             return variable
         video_height = float(getffprobe('video_height','stream=height', filename))
-        video_width = float(getffprobe('video_width','stream=width', filename))
+        video_width  = float(getffprobe('video_width','stream=width', filename))
 
         print video_height
         print video_width
@@ -78,26 +77,22 @@ else:
         font_size = video_height / 12
         watermark_size = video_height / 14
         #pdb.set_trace()
+        
 
         if _platform == "darwin":
-            textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
-            (font_size,horizontal_position_timecode,vertical_position_timecode))
             print "OS X"
             font_path= "fontfile=/Library/Fonts/AppleGothic.ttf"
         elif _platform == "linux2":
-            textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d" % 
-            (font_size,horizontal_position_timecode,vertical_position_timecode))
-            print "OS X"
+            print "linux"
             font_path= "fontfile=/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf"
 
         elif _platform == "win32":
-            textoptions = ("fontsize=%d:x=%d-text_w/2:y=%d'" % 
-            (font_size,horizontal_position_timecode,vertical_position_timecode))
+
             font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
 
         watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
         (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
-        print  textoptions
+        
 
         # Get starting timecode. In a raw state that requires further processing further on in the script.
         timecode_test_raw = getffprobe('timecode_test_raw','format_tags=timecode:stream_tags=timecode', filename)
@@ -134,10 +129,10 @@ else:
 
         #all these prints are just for testing. Will be removed later.
         print fixed_framerate	
-        drawtext_options = ("drawtext=%s:fontcolor=white:timecode=%s:\
-        rate=%s:boxcolor=0x000000AA:box=1:%s,\
+        drawtext_options = ("drawtext=%s:fontcolor=white:fontsize=%s:timecode=%s:\
+        rate=%s:x=(w-text_w)/2:y=h/1.2:boxcolor=0x000000AA:box=1,\
         drawtext=%s:fontcolor=white:text='INSERT WATERMARK TEXT HERE':%s" % 
-        (font_path, timecode_test, fixed_framerate, textoptions, font_path, watermark_options))
+        (font_path,font_size, timecode_test, fixed_framerate, font_path, watermark_options))
         print drawtext_options
         print timecode_test
         print get_framerate

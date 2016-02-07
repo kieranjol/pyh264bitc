@@ -6,6 +6,7 @@ import os
 from glob import glob
 import pdb
 from sys import platform as _platform
+
 if len(sys.argv) < 2:
     print 'IFI H264.MOV BITC/WATERMARK ACCESS COPY SCRIPT'
     print 'USAGE: PYTHON bitc.py FILENAME'
@@ -14,9 +15,8 @@ if len(sys.argv) < 2:
     print 'If input is a directory, all files will be processed' 
     print 'If input is a file, only that file will be processed'    
     sys.exit()
-else:
 
-    print _platform
+else:
 
     # Input, either file or firectory, that we want to transcode losslessly and generate metadata for
     input = sys.argv[1]
@@ -68,16 +68,11 @@ else:
 
         print video_height
         print video_width
-        # Calculate x and y coordinates of the timecode and watermark
-        vertical_position_timecode = video_height / 1.2
-        horizontal_position_timecode = video_width / 2
-        horizontal_watermark_position_timecode = video_width / 2
-        vertical_watermark_position_timecode = video_height / 2.1
+
         # Calculate appropriate font size
         font_size = video_height / 12
         watermark_size = video_height / 14
         #pdb.set_trace()
-        
 
         if _platform == "darwin":
             print "OS X"
@@ -85,16 +80,10 @@ else:
         elif _platform == "linux2":
             print "linux"
             font_path= "fontfile=/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf"
-
         elif _platform == "win32":
-
             font_path = "'fontfile=C\:\\\Windows\\\Fonts\\\\'arial.ttf'"
 
-        watermark_options = ("fontsize=%d:x=%d-text_w/2:y=%d-text_h/2:alpha=0.3" % 
-        (watermark_size,horizontal_watermark_position_timecode,vertical_watermark_position_timecode))
-        
-
-        # Get starting timecode. In a raw state that requires further processing further on in the script.
+        # Get starting timecode in a raw state that requires processing further on in the script.
         timecode_test_raw = getffprobe('timecode_test_raw','format_tags=timecode:stream_tags=timecode', filename)
         get_framerate = getffprobe('get_frame_rate','stream=avg_frame_rate', filename)
 
@@ -108,7 +97,6 @@ else:
                 timecode_test = '01\\\:00\\\:00\\\:00'
             elif _platform == "win32":
                 print "Windows"
-                
                 timecode_test = '01\:00\:00\:00'
                 
         else:
@@ -118,8 +106,6 @@ else:
                 print "OS X"
                 timecode_test = timecode_test_raw.replace(':', '\\\:').replace('\n', '')
             elif _platform == "win32":
-                print "Windows"
-                
                 timecode_test = timecode_test_raw.replace(':', '\\:').replace('\n', '').replace('\r', '')
                 print "Windows"
 
@@ -131,8 +117,9 @@ else:
         print fixed_framerate	
         drawtext_options = ("drawtext=%s:fontcolor=white:fontsize=%s:timecode=%s:\
         rate=%s:x=(w-text_w)/2:y=h/1.2:boxcolor=0x000000AA:box=1,\
-        drawtext=%s:fontcolor=white:text='INSERT WATERMARK TEXT HERE':%s" % 
-        (font_path,font_size, timecode_test, fixed_framerate, font_path, watermark_options))
+        drawtext=%s:fontcolor=white:text='INSERT WATERMARK TEXT HERE':\
+        x=(w-text_w)/2:y=(h-text_h)/2:fontsize=%s:alpha=0.4" % 
+        (font_path,font_size, timecode_test, fixed_framerate, font_path,watermark_size))
         print drawtext_options
         print timecode_test
         print get_framerate
